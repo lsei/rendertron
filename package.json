@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@google-cloud/datastore": "^1.4.2",
+    "@types/express-serve-static-core": "^4.17.35",
     "@types/fs-extra": "^5.0.4",
     "@webcomponents/webcomponentsjs": "^1.2.6",
     "chrome-launcher": "^0.10.2",
