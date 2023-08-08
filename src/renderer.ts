@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
 
-import * as fs from 'fs';
+
 import * as path from 'path';
 import { exec } from 'child_process';
 
@@ -225,10 +225,8 @@ export class Renderer {
     // TODO list of file names or something? 
     const images = [];
 
-    const pathToPngs = path.join(__dirname, 'pngs');
 
-    fs.mkdirSync(pathToPngs, { recursive: true });
-
+    const pathToPngs = path.join(__dirname, 'static', 'captures');
 
 
     for (let i = 0; i < opts.frames; i++) {

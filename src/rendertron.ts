@@ -3,10 +3,13 @@ import * as bodyParser from 'koa-bodyparser';
 import * as koaCompress from 'koa-compress';
 import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
+import * as koaMount from 'koa-mount';
+import * as koaServe from 'koa-serve';
 import * as koaLogger from 'koa-logger';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
+import * as fs from 'fs';
 
 import { Renderer, ScreenshotError } from './renderer';
 import { Config, ConfigManager } from './config';
@@ -30,11 +33,14 @@ export class Rendertron {
     const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
     this.renderer = new Renderer(browser, this.config);
 
+    const pathToPngs = path.join(__dirname, 'static', 'captures');
+    fs.mkdirSync(pathToPngs, { recursive: true });
+
     this.app.use(koaLogger());
-
     this.app.use(koaCompress());
+    this.app.use(bodyParser())
 
-    this.app.use(bodyParser());
+    this.app.use(koaMount('/captures ', koaServe(pathToPngs)));
 
     this.app.use(route.get('/', async (ctx: Koa.Context) => {
       await koaSend(
