@@ -278,7 +278,7 @@ function combinePngToMp4(pathToPngs: string, outputFile: string): Promise<string
     const command = `ffmpeg -framerate 25 -i ${pathToPngs} -c:v libx264 -r 30 -pix_fmt yuv420p ${outputFile}`;
 
     // Execute the command
-    exec(command, (error, stdout, stderr) => {
+    exec(command, (error) => {
       if (error) {
         reject(`An error occurred: ${error}`);
         return;
