@@ -29,14 +29,14 @@ export type Config = {
     datastoreCache: boolean;
     timeout: number;
     port: string;
-    width:number;
-    height:number;
+    width: number;
+    height: number;
 };
 
 export class ConfigManager {
     public static config: Config = {
         datastoreCache: false,
-        timeout: 10000,
+        timeout: 100000,
         port: '3000',
         width: 1000,
         height: 1000,
