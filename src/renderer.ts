@@ -3,6 +3,7 @@ import * as url from 'url';
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { exec } from 'child_process';
 
 
 import { Config } from './config';
@@ -199,7 +200,7 @@ export class Renderer {
   async renderAnimation(
     url: string,
     options?: AnimationOptions
-  ): Promise<string[]> {
+  ): Promise<string> {
 
     const opts = Object.assign({}, {
       readyVarName: 'cxReady',
@@ -242,7 +243,9 @@ export class Renderer {
       images.push(file)
     }
 
-    return images
+    const mp4file = await combinePngToMp4(path.join(pathToPngs, captureId + "_" + '%05d.png'), path.join(pathToPngs, captureId + ".mp4"));
+
+    return mp4file
   }
 }
 
@@ -267,4 +270,20 @@ export class ScreenshotError extends Error {
 
     this.type = type;
   }
+}
+
+function combinePngToMp4(pathToPngs: string, outputFile: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // FFmpeg command to combine PNG files into an MP4 file
+    const command = `ffmpeg -framerate 25 -i ${pathToPngs} -c:v libx264 -r 30 -pix_fmt yuv420p ${outputFile}`;
+
+    // Execute the command
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`An error occurred: ${error}`);
+        return;
+      }
+      resolve(outputFile);
+    });
+  });
 }

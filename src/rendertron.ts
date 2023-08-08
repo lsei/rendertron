@@ -115,12 +115,12 @@ export class Rendertron {
     };
 
     try {
-      const frames = await this.renderer.renderAnimation(
+      const vid = await this.renderer.renderAnimation(
         url, options
       );
       ctx.set('Content-Type', 'application/json');
       ctx.body = JSON.stringify({
-        frames,
+        vid,
       })
     } catch (error) {
       console.error(error)
