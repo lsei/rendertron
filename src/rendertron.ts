@@ -8,8 +8,8 @@ import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
 
-import {Renderer, ScreenshotError} from './renderer';
-import {Config, ConfigManager} from './config';
+import { Renderer, ScreenshotError } from './renderer';
+import { Config, ConfigManager } from './config';
 
 /**
  * Rendertron rendering service. This runs the server which routes rendering
@@ -18,7 +18,7 @@ import {Config, ConfigManager} from './config';
 export class Rendertron {
   app: Koa = new Koa();
   private config: Config = ConfigManager.config;
-  private renderer: Renderer|undefined;
+  private renderer: Renderer | undefined;
   private port = process.env.PORT;
 
   async initialize() {
@@ -27,7 +27,7 @@ export class Rendertron {
 
     this.port = this.port || this.config.port;
 
-    const browser = await puppeteer.launch({args: ['--no-sandbox']});
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
     this.renderer = new Renderer(browser, this.config);
 
     this.app.use(koaLogger());
@@ -55,6 +55,9 @@ export class Rendertron {
       '/screenshot/:url(.*)', this.handleScreenshotRequest.bind(this)));
     this.app.use(route.post(
       '/screenshot/:url(.*)', this.handleScreenshotRequest.bind(this)));
+
+    this.app.use(route.get(
+      '/animation/:url(.*)', this.handleAnimationRequest.bind(this)));
 
     return this.app.listen(this.port, () => {
       console.log(`Listening on port ${this.port}`);
@@ -95,6 +98,33 @@ export class Rendertron {
     ctx.body = serialized.content;
   }
 
+  async handleAnimationRequest(ctx: Koa.Context, url: string) {
+    if (!this.renderer) {
+      throw (new Error('No renderer initalized yet.'));
+    }
+    if (this.restricted(url)) {
+      ctx.status = 403;
+      return;
+    }
+    const options = {
+      width: Number(ctx.query['width']) || this.config.width,
+      height: Number(ctx.query['height']) || this.config.height
+    };
+
+    try {
+      const frames = await this.renderer.renderAnimation(
+        url, options
+      );
+      ctx.set('Content-Type', 'application/json');
+      ctx.body = JSON.stringify({
+        frames,
+      })
+    } catch (error) {
+      console.error(error)
+      ctx.status = 500;
+    }
+
+  }
   async handleScreenshotRequest(ctx: Koa.Context, url: string) {
     if (!this.renderer) {
       throw (new Error('No renderer initalized yet.'));

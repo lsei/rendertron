@@ -187,10 +187,64 @@ export class Renderer {
       Object.assign({}, options, { type: 'jpeg', encoding: 'binary' });
     // Screenshot returns a buffer based on specified encoding above.
     // https://github.com/GoogleChrome/puppeteer/blob/v1.8.0/docs/api.md#pagescreenshotoptions
+    // @ts-ignore
     const buffer = await page.screenshot(screenshotOptions) as Buffer;
     return buffer;
   }
+
+  async renderAnimation(
+    url: string,
+    options?: AnimationOptions
+  ): Promise<string[]> {
+
+    const opts = Object.assign({
+      readyVarName: 'cxReady',
+      nextFuncName: 'nextFrame',
+      frames: 10,
+      width: 512,
+      height: 512,
+    }, options)
+
+    const page = await this.browser.newPage();
+    await page.setViewport({ width: opts.width, height: opts.height });
+    await page.goto(url, { timeout: this.config.timeout });
+
+
+    await page.waitForFunction('window.' + opts.readyVarName + ' === true');
+
+
+    // TODO: uuid
+    const captureId = 'abcd-1234';
+
+    // TODO list of file names or something? 
+    const images = [];
+
+    const pathToPngs = "./pngs/";
+
+
+
+    for (let i = 0; i < opts.frames; i++) {
+      const filename = captureId + "_" + i.toString().padStart(5, '0') + ".png";
+      const file = pathToPngs + filename;
+      console.log('capturing ' + file);
+      await page.screenshot({ path: file });
+      await page.waitForFunction('window.' + opts.nextFuncName + '()');
+
+      images.push(file)
+    }
+
+    return images
+  }
 }
+
+interface AnimationOptions {
+  readyVarName?: string;
+  nextFuncName?: string;
+  frames?: number;
+  width?: number;
+  height?: number;
+}
+
 
 type ErrorType = 'Forbidden' | 'NoResponse';
 
