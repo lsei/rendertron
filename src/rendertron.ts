@@ -3,8 +3,11 @@ import * as bodyParser from 'koa-bodyparser';
 import * as koaCompress from 'koa-compress';
 import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
+// @ts-ignore
 import * as koaMount from 'koa-mount';
+// @ts-ignore
 import * as koaServe from 'koa-serve';
+// @ts-ignore
 import * as koaLogger from 'koa-logger';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer';
