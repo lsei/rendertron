@@ -210,6 +210,7 @@ export class Renderer {
     await page.goto(url, { timeout: this.config.timeout });
 
 
+    console.log('waiting for', 'window.' + opts.readyVarName + ' === true');
     await page.waitForFunction('window.' + opts.readyVarName + ' === true');
 
 
@@ -228,6 +229,8 @@ export class Renderer {
       const file = pathToPngs + filename;
       console.log('capturing ' + file);
       await page.screenshot({ path: file });
+
+      console.log('waiting for', 'window.' + opts.nextFuncName + '()');
       await page.waitForFunction('window.' + opts.nextFuncName + '()');
 
       images.push(file)

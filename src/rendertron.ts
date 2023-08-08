@@ -108,7 +108,10 @@ export class Rendertron {
     }
     const options = {
       width: Number(ctx.query['width']) || this.config.width,
-      height: Number(ctx.query['height']) || this.config.height
+      height: Number(ctx.query['height']) || this.config.height,
+      readyVarName: ctx.query['readyVarName'],
+      nextFuncName: ctx.query['nextFuncName'],
+      frames: Number(ctx.query['frames']),
     };
 
     try {
