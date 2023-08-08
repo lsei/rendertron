@@ -3,12 +3,6 @@ import * as bodyParser from 'koa-bodyparser';
 import * as koaCompress from 'koa-compress';
 import * as route from 'koa-route';
 import * as koaSend from 'koa-send';
-// @ts-ignore
-import * as koaMount from 'koa-mount';
-// @ts-ignore
-import * as koaServe from 'koa-serve';
-// @ts-ignore
-import * as koaLogger from 'koa-logger';
 import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
@@ -39,15 +33,19 @@ export class Rendertron {
     const pathToPngs = path.join(__dirname, 'static', 'captures');
     fs.mkdirSync(pathToPngs, { recursive: true });
 
-    this.app.use(koaLogger());
     this.app.use(koaCompress());
     this.app.use(bodyParser())
 
-    this.app.use(koaMount('/captures ', koaServe(pathToPngs)));
+
 
     this.app.use(route.get('/', async (ctx: Koa.Context) => {
       await koaSend(
         ctx, 'index.html', { root: path.resolve(__dirname, '../src') });
+    }));
+    this.app.use(route.get('/captures/:file(.*)', async (ctx: Koa.Context, file) => {
+      // todo: fix leak
+      await koaSend(
+        ctx, file, { root: path.resolve(pathToPngs, file) });
     }));
     this.app.use(
       route.get('/_ah/health', (ctx: Koa.Context) => ctx.body = 'OK'));
