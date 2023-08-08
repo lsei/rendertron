@@ -1,6 +1,10 @@
 import * as puppeteer from 'puppeteer';
 import * as url from 'url';
 
+import * as fs from 'fs';
+import * as path from 'path';
+
+
 import { Config } from './config';
 
 type SerializedResponse = {
@@ -220,13 +224,15 @@ export class Renderer {
     // TODO list of file names or something? 
     const images = [];
 
-    const pathToPngs = "./pngs/";
+    const pathToPngs = path.join(__dirname, 'pngs');
+
+    fs.mkdirSync(pathToPngs, { recursive: true });
 
 
 
     for (let i = 0; i < opts.frames; i++) {
       const filename = captureId + "_" + i.toString().padStart(5, '0') + ".png";
-      const file = pathToPngs + filename;
+      const file = path.join(pathToPngs, filename);
       console.log('capturing ' + file);
       await page.screenshot({ path: file });
 
