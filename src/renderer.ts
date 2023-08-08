@@ -201,7 +201,7 @@ export class Renderer {
     options?: AnimationOptions
   ): Promise<string[]> {
 
-    const opts = Object.assign({
+    const opts = Object.assign({}, {
       readyVarName: 'cxReady',
       nextFuncName: 'nextFrame',
       frames: 10,
