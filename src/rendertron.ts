@@ -45,7 +45,7 @@ export class Rendertron {
     this.app.use(route.get('/captures/:file(.*)', async (ctx: Koa.Context, file) => {
       // todo: fix leak
       await koaSend(
-        ctx, file, { root: path.resolve(pathToPngs, file) });
+        ctx, file, { root: pathToPngs });
     }));
     this.app.use(
       route.get('/_ah/health', (ctx: Koa.Context) => ctx.body = 'OK'));
