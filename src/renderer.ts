@@ -241,6 +241,8 @@ export class Renderer {
       images.push(file)
     }
 
+    await page.close();
+
     const mp4file = await combinePngToMp4(path.join(pathToPngs, captureId + "_" + '%05d.png'), path.join(pathToPngs, captureId + ".mp4"));
 
     return mp4file
